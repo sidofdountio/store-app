@@ -5,7 +5,7 @@
 <p>When customer buy a product the money go insite a store owner and another part in our company</p>
 <p>A store man can view who buy hi product</p>
 <p>In store the chart where show the progress of saling or buy. We can see product that was buy. we can who (sex, age) buy more product</p>
-## Technology and tools using
+<h3> Technology and tools using</h3>
 <ul>
   <li>Java 17 base Language</li>
    <li>Spring boot framework for matering code and buit REST API'S</li>
