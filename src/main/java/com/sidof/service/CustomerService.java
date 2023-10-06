@@ -20,7 +20,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomerService implements CustomerServiceDao {
     private final CustomerRepo customerRepo;
-
     @Override
     public Customer addCustomer(Customer customer) {
         if (customer.getPhone() == null) {

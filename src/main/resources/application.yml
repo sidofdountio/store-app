@@ -3,7 +3,7 @@ server:
   error:
     include-message: always
 application:
-  title: ecommerce Luxe-lyfe
+  title: store
   version: 1.0
 
 spring:
@@ -11,7 +11,7 @@ spring:
     active: ${ACTIVE_PROFILE:dev}
 
   datasource:
-    url: jdbc:postgresql://localhost:5332/luxelyfe
+    url: jdbc:postgresql://localhost:5332/store
     username: sidof
     password: sidof1/@
   driver-class-name: org.postgresql.Driver

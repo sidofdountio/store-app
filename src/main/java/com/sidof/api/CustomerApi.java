@@ -18,7 +18,7 @@ import static org.springframework.http.HttpStatus.OK;
  * @Version v1.0
  */
 @RestController
-@RequestMapping("/api/v1/luxelyfe/customer")
+@RequestMapping("/api/v1/store/customer")
 @CrossOrigin(origins = "http://localhost:4200/", maxAge = 3600)
 @Slf4j
 @RequiredArgsConstructor
