@@ -1,4 +1,4 @@
-package com.sidof.security;
+package com.sidof.security.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import static jakarta.persistence.GenerationType.SEQUENCE;
@@ -16,13 +17,12 @@ import static jakarta.persistence.GenerationType.SEQUENCE;
  * @Version v1.0
  * @YouTube @sidof8065
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Entity
-public class Role {
-    @SequenceGenerator(name = "sequence_id_role",allocationSize = 1,sequenceName = "sequence_id_role") @GeneratedValue(strategy = SEQUENCE,generator = "sequence_id_role")
-    @Id
-    private Long id;
-    private String name;
+@Getter
+public enum Role {
+    ROLE_ADMIN("ROLE_ADMIN"),
+    ROLE_USER("ROLE_USER"),
+    ROLE_MANAGER("ROLE_MANAGER");
+    Role(String role){}
+
+
 }

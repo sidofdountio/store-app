@@ -1,5 +1,6 @@
-package com.sidof.security;
+package com.sidof.security.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,9 +13,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
-import static jakarta.persistence.FetchType.*;
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
 /**
@@ -29,22 +29,22 @@ import static jakarta.persistence.GenerationType.SEQUENCE;
 @Builder
 @Entity
 public class Appuser implements UserDetails {
-    @SequenceGenerator(name = "sequence_id_appuser",allocationSize = 1,sequenceName = "sequence_id_appuser") @GeneratedValue(strategy = SEQUENCE,generator = "sequence_id_appuser")
+    @SequenceGenerator(name = "sequence_id_appuser", allocationSize = 1, sequenceName = "sequence_id_appuser")
+    @GeneratedValue(strategy = SEQUENCE, generator = "sequence_id_appuser")
     @Id
     private Long id;
     private String name;
     private String email;
     private String password;
-    private Boolean enable=true;
-    @ManyToMany(fetch = EAGER)
-    private Collection<Role> roles = new ArrayList<Role>();
+    @Enumerated(STRING)
+    private Role role;
+    @JsonIgnore @OneToMany(mappedBy = "appuser")
+    private List<Token>tokens;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-         getRoles().forEach(role -> {
-             authorities.add(new SimpleGrantedAuthority(role.getName())) ;
-         });
+        authorities.add(new SimpleGrantedAuthority(role.name()));
         return authorities;
     }
 
@@ -70,7 +70,7 @@ public class Appuser implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return enable;
+        return true;
     }
 
     @Override

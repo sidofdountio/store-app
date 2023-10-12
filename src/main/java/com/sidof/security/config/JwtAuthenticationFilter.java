@@ -1,5 +1,6 @@
 package com.sidof.security.config;
 
+import com.sidof.security.repo.TokenRepo;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +28,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final TokenRepo tokenRepo;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
@@ -47,13 +49,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 //            Fetching user in database.
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-//            Check if token is valid
-            if (jwtService.isValidToken(token,userDetails)){
+//            Check if token is valid and valid on database
+            var isValidToken = tokenRepo.findByToken(token)
+                    .map( t -> !t.isExpired() && !t.isRevoked())
+                    .orElse(false);
+            if (jwtService.isValidToken(token,userDetails) && isValidToken){
 //                Create user: UsernamePasswordAuthenticationToken
                 UsernamePasswordAuthenticationToken authenticationToken  = new UsernamePasswordAuthenticationToken(
                         userDetails,null,userDetails.getAuthorities()
                 );
-//                force secuity
+//                force security
                 authenticationToken.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
