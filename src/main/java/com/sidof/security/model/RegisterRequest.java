@@ -1,4 +1,4 @@
-package com.sidof.security.auth;
+package com.sidof.security.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import static io.jsonwebtoken.SignatureAlgorithm.*;
+
 /**
  * @Author sidof
  * @Since 10/3/23
@@ -29,7 +31,7 @@ public class JwtService {
     public String generateToken(UserDetails userDetails){
         return generateToken(new HashMap<>(),userDetails);
     }
-    /**    gerate token have twoo parameters:
+    /**    generate token have too parameters:
      * extractClaim: Map;
      * user: UserDetails from spring.security.
      */
@@ -39,13 +41,13 @@ public class JwtService {
                 .setClaims(extractClaim)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 *24))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .signWith(getSignInKey(), HS256)
                 .compact();
     }
 
     /**
-     *  Return true if username in the toekn equals to username in userdetails. And the expiration date
+     *  Return true if username in the token equals to username in userDetails. And the expiration date.
      */
     public boolean isValidToken(String token,UserDetails userDetails){
         String username= extractUserEmail(token);

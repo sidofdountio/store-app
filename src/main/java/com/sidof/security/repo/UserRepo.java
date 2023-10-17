@@ -1,6 +1,6 @@
 package com.sidof.security.repo;
 
-import com.sidof.security.Appuser;
+import com.sidof.security.model.Appuser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

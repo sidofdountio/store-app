@@ -2,6 +2,7 @@ package com.sidof.security.config;
 
 import com.sidof.security.repo.UserRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,6 +13,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+
+import static org.springframework.http.HttpHeaders.*;
+import static org.springframework.http.HttpMethod.*;
 
 /**
  * @Author sidof
@@ -22,6 +30,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
+
     private final UserRepo userRepo;
 
     @Bean
@@ -31,7 +40,7 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userDetailsService());
         authenticationProvider.setPasswordEncoder(passwordEncoder());
@@ -42,6 +51,35 @@ public class ApplicationConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
+
+
+    @Bean
+    public CorsFilter configurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config =new CorsConfiguration();
+        config.addAllowedOrigin("http://localhost:4200");
+        config.setAllowCredentials(true);
+        config.setExposedHeaders(Arrays.asList(ACCEPT,
+                AUTHORIZATION,
+                CONTENT_TYPE,
+                ORIGIN,ACCESS_CONTROL_ALLOW_ORIGIN,
+                ACCESS_CONTROL_REQUEST_METHOD
+        ));
+        config.setAllowedHeaders(Arrays.asList(
+                ACCEPT,
+                AUTHORIZATION,
+                CONTENT_TYPE,
+                ORIGIN,
+                ACCESS_CONTROL_ALLOW_ORIGIN,
+                ACCESS_CONTROL_REQUEST_METHOD
+
+        ));
+        config.setAllowedMethods(Arrays.asList(GET.name(), PUT.name(), POST.name(), DELETE.name()));
+        config.setMaxAge((3600L));
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

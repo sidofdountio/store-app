@@ -1,4 +1,4 @@
-package com.sidof.security.auth;
+package com.sidof.security.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,10 +11,8 @@ import lombok.NoArgsConstructor;
  * @Version v1.0
  * @YouTube @sidof8065
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class AuthenticationResponse {
-    private String token;
+@Data @Builder @NoArgsConstructor @AllArgsConstructor
+public class AuthenticationRequest {
+    private String email;
+    private String password;
 }

@@ -1,5 +1,6 @@
 package com.sidof.security.config;
 
+import com.sidof.security.service.LogoutService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,12 +8,16 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
+import static com.sidof.security.model.Role.ROLE_ADMIN;
+import static com.sidof.security.model.Role.ROLE_USER;
+import static org.springframework.http.HttpMethod.*;
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 /**
  * @Author sidof
@@ -27,25 +32,33 @@ import static org.springframework.http.HttpMethod.POST;
 public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authenticationProvider;
+    private final LogoutService logoutHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer
-                        .disable())
+                .cors()
+                .and()
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authHttpReq -> authHttpReq
                         .requestMatchers("api/v1/store/auth/**")
                         .permitAll()
-                        .requestMatchers(GET,"api/v1/store/user/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(POST,"api/v1/store/user/addRoleToUser/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(GET,"api/v1/store/user/**").hasAnyAuthority(ROLE_ADMIN.name(),ROLE_USER.name())
+                        .requestMatchers(PUT,"api/v1/store/user/edit/**").hasAnyAuthority(ROLE_ADMIN.name(),ROLE_USER.name())
                         .anyRequest()
                         .authenticated()
                 )
                 .sessionManagement(sessionManagement -> sessionManagement
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        .sessionCreationPolicy(STATELESS)
                 )
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout()
+                .logoutUrl("/logout")
+                .addLogoutHandler(logoutHandler)
+                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
+                .permitAll();
+
         return http.build();
     }
 }

@@ -1,17 +1,18 @@
 package com.sidof.security.api;
 
-import com.sidof.security.Appuser;
-import com.sidof.security.Role;
+import com.sidof.model.Response;
+import com.sidof.security.model.Appuser;
 import com.sidof.security.service.UserService;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.*;
+import static java.time.LocalDateTime.now;
+import static java.util.Map.of;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 
 /**
  * @Author sidof
@@ -26,18 +27,31 @@ import static org.springframework.http.HttpStatus.*;
 public class UserApi {
     private final UserService userService;
 
-    @PostMapping("/addRole")
-    public ResponseEntity<Role>addRole(@RequestBody Role role){
-        return new ResponseEntity<Role>(userService.saverole(role),CREATED);
+
+    @PutMapping("/edit")
+    public ResponseEntity<Response> updateUser(@RequestBody Appuser userToUpdate) {
+        Response response = Response.builder()
+                .timeStamp(now())
+                .data(of("update", userService.edit(userToUpdate)))
+                .message("edit user")
+                .status(CREATED)
+                .statusCode(CREATED.value())
+                .build();
+        return ResponseEntity.ok(response);
     }
-    @PostMapping("/addRoleToUser")
-    public ResponseEntity<AddRoleToUser>addRoleToUser(AddRoleToUser request){
-        userService.addRoleToUser(request.getRoleName(),request.getUserName());
-        return new ResponseEntity<>(CREATED);
+
+    @GetMapping
+    public ResponseEntity<Response> defaultUsers() {
+        List<Appuser> users = userService.getUsers();
+        var response = Response.builder()
+                .timeStamp(now())
+                .status(OK)
+                .statusCode(OK.value())
+                .message("")
+                .data(of("user", users))
+                .build();
+        return ResponseEntity.ok(response);
     }
-    @GetMapping("/users")
-    public ResponseEntity<List<Appuser>>users(){
-        return new ResponseEntity<List<Appuser>>(userService.getUsers(),OK);
-    }
+
 }
 
