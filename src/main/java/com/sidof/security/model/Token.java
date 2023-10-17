@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.EnumType.*;
 import static jakarta.persistence.GenerationType.SEQUENCE;
@@ -25,7 +27,7 @@ public class Token {
     @Id
     @SequenceGenerator(name = "token_sequence_id", sequenceName = "token_sequence_id", allocationSize = 1)
     @GeneratedValue(strategy = SEQUENCE, generator = "token_sequence_id")
-    private Integer id;
+    private Long id;
     private String token;
     private boolean expired;
     private boolean revoked;
@@ -34,4 +36,5 @@ public class Token {
     @ManyToOne(cascade = ALL)
     @JoinColumn(name = "appuser_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "token_appuser"))
     private Appuser appuser;
+    private LocalDateTime generateAt;
 }

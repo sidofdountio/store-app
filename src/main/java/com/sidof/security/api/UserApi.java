@@ -30,7 +30,6 @@ public class UserApi {
 
     @PutMapping("/edit")
     public ResponseEntity<Response> updateUser(@RequestBody Appuser userToUpdate) {
-
         Response response = Response.builder()
                 .timeStamp(now())
                 .data(of("update", userService.edit(userToUpdate)))
@@ -53,5 +52,6 @@ public class UserApi {
                 .build();
         return ResponseEntity.ok(response);
     }
+
 }
 

@@ -59,10 +59,21 @@ public class ApplicationConfig {
         CorsConfiguration config =new CorsConfiguration();
         config.addAllowedOrigin("http://localhost:4200");
         config.setAllowCredentials(true);
-        config.setExposedHeaders(Arrays.asList(ACCEPT, AUTHORIZATION, CONTENT_TYPE, ORIGIN,ACCESS_CONTROL_ALLOW_ORIGIN,
-                ACCESS_CONTROL_REQUEST_METHOD,ACCESS_CONTROL_REQUEST_METHOD));
-        config.setAllowedHeaders(Arrays.asList(ACCEPT, AUTHORIZATION, CONTENT_TYPE, ORIGIN,ACCESS_CONTROL_ALLOW_ORIGIN,
-                ACCESS_CONTROL_REQUEST_METHOD,ACCESS_CONTROL_REQUEST_METHOD));
+        config.setExposedHeaders(Arrays.asList(ACCEPT,
+                AUTHORIZATION,
+                CONTENT_TYPE,
+                ORIGIN,ACCESS_CONTROL_ALLOW_ORIGIN,
+                ACCESS_CONTROL_REQUEST_METHOD
+        ));
+        config.setAllowedHeaders(Arrays.asList(
+                ACCEPT,
+                AUTHORIZATION,
+                CONTENT_TYPE,
+                ORIGIN,
+                ACCESS_CONTROL_ALLOW_ORIGIN,
+                ACCESS_CONTROL_REQUEST_METHOD
+
+        ));
         config.setAllowedMethods(Arrays.asList(GET.name(), PUT.name(), POST.name(), DELETE.name()));
         config.setMaxAge((3600L));
         source.registerCorsConfiguration("/**", config);

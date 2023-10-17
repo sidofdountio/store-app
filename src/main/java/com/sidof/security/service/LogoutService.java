@@ -30,13 +30,14 @@ public class LogoutService implements LogoutHandler {
         if ((authHeader == null) || !authHeader.startsWith("Bearer ")) {
             return;
         }
+        System.out.println("request.getHeader() = " + request.getHeader("Authorization"));
         token = authHeader.substring(7);
         var storedToken = tokenRepo.findByToken(token).orElse(null);
 //        Check whether token ist null
         if (storedToken  != null){
             storedToken.setExpired(true);
             storedToken.setRevoked(true);
-            log.info("Expired the token");
+            log.info("Save expired the token");
             tokenRepo.save(storedToken);
         }
     }

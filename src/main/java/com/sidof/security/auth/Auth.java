@@ -8,7 +8,10 @@ import com.sidof.security.model.RegisterRequest;
 import com.sidof.security.model.Role;
 import com.sidof.security.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -32,16 +35,17 @@ import static org.springframework.http.HttpStatus.*;
 @RequiredArgsConstructor
 public class Auth {
     private final UserService userService;
+    private final LogoutHandler logoutHandler;
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest registerRequest) throws InterruptedException {
         AuthenticationResponse registered = userService.register(registerRequest);
-
         return new ResponseEntity<AuthenticationResponse>(registered, CREATED);
     }
 
     @PostMapping("/authenticate")
     public ResponseEntity< AuthenticationResponse > register(@RequestBody AuthenticationRequest authenticationRequest){
-        return new ResponseEntity<AuthenticationResponse>(userService.authenticate(authenticationRequest),OK);
+        AuthenticationResponse authenticate = userService.authenticate(authenticationRequest);
+        return new ResponseEntity<AuthenticationResponse>(authenticate,OK);
     }
 
 

@@ -15,13 +15,13 @@ import java.util.Optional;
  * @YouTube @sidof8065
  */
 @Repository
-public interface TokenRepo extends JpaRepository<Token, Integer> {
+public interface TokenRepo extends JpaRepository<Token, Long> {
     @Query("""
             SELECT t FROM Token t inner join Appuser u ON t.appuser.id = u.id
              WHERE u.id = :id AND (t.expired = false OR t.revoked = false)
             """
     )
-    List<Token> findAllValidTokensByAppuser(Integer id);
+    List<Token> findAllValidTokensByAppuser(Long id);
 
     Optional<Token> findByToken(String token);
 }

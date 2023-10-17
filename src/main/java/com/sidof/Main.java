@@ -30,7 +30,7 @@ public class Main {
     CommandLineRunner commandLineRunner(UserService userService) {
         return args -> {
             userService.register(new RegisterRequest("sidof", "sidof@gmail.com", "password"));
-//            userService.register(new RegisterRequest("yan", "yan@gmail.com", "password"));
+            userService.register(new RegisterRequest("yan", "yan@gmail.com", "password"));
         };
     }
 

@@ -13,10 +13,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.sidof.security.model.Role.ROLE_USER;
 import static com.sidof.security.model.TokenType.BEARER;
+import static java.time.LocalDateTime.*;
 
 /**
  * @Author sidof
@@ -94,36 +96,58 @@ public class UserService implements AppUserImplement {
                 .expired(false)
                 .revoked(false)
                 .token(token)
+                .generateAt(now())
                 .build();
-        log.info("Save new token {}", token);
+        log.info(" save user token after login,logout or update: {}", token);
         tokenRepo.save(tokeToSave);
     }
 
     //    revoke all user token
     public void revokeAppuserToken(Appuser appuser) {
-        var validUserToken = tokenRepo.findAllValidTokensByAppuser(Math.toIntExact((appuser.getId())));
+        var validUserToken = tokenRepo.findAllValidTokensByAppuser(appuser.getId());
         if (validUserToken.isEmpty())
             return;
         validUserToken.forEach(token -> {
             token.setRevoked(true);
             token.setExpired(true);
         });
-        log.info("user token had revoked");
+        log.info("user token had been revoked while login or logout : ");
         tokenRepo.saveAll(validUserToken);
     }
 
     public boolean isTokenValid(String token) {
         String username = jwtService.extractUserEmail(token);
         var user = userRepo.findByEmail(username).orElseThrow();
+
+        var isValidToken = tokenRepo.findByToken(token)
+                .map( t -> !t.isExpired() && !t.isRevoked())
+                .orElse(false);
         log.info("Token is valid {}", token);
-        return jwtService.isValidToken(token, user);
+        return jwtService.isValidToken(token, user) && isValidToken;
     }
 
     @Override
-    public Appuser edit(Appuser user) {
-        var userToEdit = userRepo.findByEmail(user.getEmail())
-                .orElseThrow(() -> new IllegalStateException(String.format("user not exit")));
-        log.info("update current user {}", user);
-        return userRepo.save(user);
+    public Appuser edit(Appuser userToEdit) {
+        var userToEditByEmail = userRepo.findByEmail(userToEdit.getEmail())
+                .orElseThrow(() -> new IllegalStateException(String.format("user not exit %s", userToEdit.getEmail())));
+        log.info("update current user {}", userToEdit);
+//      update
+        userToEdit.setPassword(passwordEncoder.encode(userToEdit.getPassword()));
+        var editeUserSave = userRepo.save(userToEdit);
+//        TODO: continue edite user properties
+//        Revoke all previer tokens.
+        revokeAppuserToken(userToEdit);
+//        Generate new token.
+        String token = jwtService.generateToken(userToEdit);
+//        Save new generate token.
+        saveAppuserToken(editeUserSave, token);
+
+        return Appuser.builder()
+                .email(editeUserSave.getEmail())
+                .name(editeUserSave.getName())
+                .role(editeUserSave.getRole())
+                .tokens(editeUserSave.getTokens())
+                .id(editeUserSave.getId())
+                .build();
     }
 }

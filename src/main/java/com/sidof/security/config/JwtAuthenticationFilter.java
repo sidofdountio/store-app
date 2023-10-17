@@ -41,7 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-//        remove 7 length for authHeader to get the token;
+//        remove 7 length for authHeader to get the token.
         token = authHeader.substring(7);
 //       If ok extract email from the token
         userEmail = jwtService.extractUserEmail(token);

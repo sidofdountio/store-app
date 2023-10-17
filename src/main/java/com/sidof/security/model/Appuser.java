@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.*;
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
 /**
@@ -38,8 +39,9 @@ public class Appuser implements UserDetails {
     private String password;
     @Enumerated(STRING)
     private Role role;
-    @JsonIgnore @OneToMany(mappedBy = "appuser")
-    private List<Token>tokens;
+    @JsonIgnore
+    @OneToMany(mappedBy = "appuser",fetch = EAGER)
+    private List<Token>tokens=new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
